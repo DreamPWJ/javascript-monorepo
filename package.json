@@ -1,0 +1,62 @@
+{
+  "name": "frontend-monorepo",
+  "version": "1.0.0",
+  "description": "MonoRepo单仓多包代码架构根目录",
+  "main": "index.js",
+  "private": true,
+  "keywords": [],
+  "author": "潘维吉",
+  "license": "MIT",
+  "scripts": {
+    "bootstrap:all": "pnpm install && npm run build:all",
+    "watch:ts": "pnpm run -r watch:ts",
+    "clean:all": "npm run clean:ts && pnpm run -r clean:modules && rimraf node_modules && rimraf pnpm-lock.yaml",
+    "build:all": "pnpm run -r compile:ts && npm run gulp",
+    "build:ts": "pnpm run -r compile:ts",
+    "gulp": "cd scripts && gulp",
+    "packages:dev": "tsc -b packages/athena-components --watch",
+    "clean:modules": "rimraf node_modules",
+    "clean:ts": "pnpm run -r clean:ts"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@types/node": "^20.14.10",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "danger": "^12.3.3",
+    "dotenv-cli": "^7.4.2",
+    "eslint": "^9.6.0",
+    "gulp": "^5.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-typescript": "^5.0.1",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2",
+    "rimraf": "^5.0.9",
+    "stylelint": "^16.6.1",
+    "stylelint-config-standard": "^36.0.1",
+    "typescript": "^5.5.3",
+    "yargs": "^17.7.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,vue,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ],
+    "*.{css,scss,less}": [
+      "stylelint --config  ./.stylelintrc --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  }
+}
