@@ -22,10 +22,11 @@
 - TypeScript
 - Pnpm
 - Vite Vitest
+- Ant Design or shadcn/ui
+- Sentry
 - Tailwind CSS
 - CSS Variables
 - Lodash
-- shadcn/ui or Ant Design
 
 #### 安装Pnpm相关依赖
 
