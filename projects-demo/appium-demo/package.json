@@ -1,0 +1,17 @@
+{
+  "name": "appium-demo",
+  "version": "1.0.0",
+  "description": "Appium自动化UI工程",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "devDependencies": {
+    "webdriverio": "9.5.1"
+  },
+  "keywords": [
+    "Appium"
+  ],
+  "author": "panweiji",
+  "license": "MIT"
+}
