@@ -36,24 +36,22 @@ const renderMarkdown: BubbleProps['messageRender'] = (content) => (
  * 对话列表
  * @returns
  */
-function AIChat () {
-  const [value, setValue] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
+function AIChat() {
   const scrollDiv = useRef<HTMLDivElement | null>(null)
   const senderRef = useRef<GetRef<typeof Sender>>(null)
+
+  const [value, setValue] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
   const array = Array.from({ length: 0 }, (_, index) => {
     return {
       id: `${index}`,
       role: 'user',
-      content:
-        'sadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadfsadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadfsadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadfsadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadfsadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadfsadfsadf设置子元素之间的间隔设置子元素之间的间隔设置子元素之间的间隔dsadf',
+      content: 'sadfsadf设置子元素之间的间隔x的间隔 a  间的间隔dsadf',
     } as Conversation
   })
 
   const [conversations, setConversation] = useState<Conversation[]>(array)
-
-
 
   useEffect(() => {
     if (scrollDiv.current) {
@@ -68,23 +66,42 @@ function AIChat () {
   const requestConversation = async (input: string) => {
     senderRef.current?.blur()
     setConversation([
-      {
-        id: `system_${conversations.length}`,
-        role: 'system',
-        content: '',
-        loading: true,
-      },
+      ...conversations,
       {
         id: `user_${conversations.length}`,
         role: 'user',
         content: input,
         loading: false,
       },
-      ...conversations,
+      {
+        id: `system_${conversations.length}`,
+        role: 'system',
+        content: '',
+        loading: true,
+      },
     ])
     setLoading(true)
 
-    // 请求接口 数据
+    setValue('')
+
+    // TODO: 请求接口 数据
+  }
+
+  const cancelRequest = () => {
+    setLoading(false)
+    setConversation((prevConversations) => {
+      if (prevConversations.length === 0) return prevConversations
+
+      const lastMessage = prevConversations.at(-1)
+
+      if (!lastMessage?.content || lastMessage?.content.length <= 0) {
+        return prevConversations.slice(0, -1)
+      } else {
+        return prevConversations.map((conversation, index) =>
+          index === 0 ? { ...conversation, loading: false } : conversation,
+        )
+      }
+    })
   }
 
   const MessageItem = (conversation: Conversation) => {
@@ -114,14 +131,11 @@ function AIChat () {
     )
   }
 
-  const PromptsRender = (params: { visible: boolean, onClick: (text: string) => void }) => {
-
-
+  const PromptsRender = (params: { visible: boolean; onClick: (text: string) => void }) => {
     const [prompts, setPrompt] = useState<PromptProps[]>([
       {
         key: '1',
         description: '今天的天气怎么样？',
-
       },
       {
         key: '2',
@@ -137,15 +151,19 @@ function AIChat () {
       },
     ])
 
-
     if (!params.visible) {
-      return 
+      return <></>
     }
     return (
       <div>
-        <Prompts onItemClick={(info) => {
-          params.onClick?.(info.data?.description?.toString() || '')
-        }} title="✨ 鼓舞人心的火花和奇妙的提示" items={prompts} wrap />
+        <Prompts
+          onItemClick={(info) => {
+            params.onClick?.(info.data?.description?.toString() || '')
+          }}
+          title="✨ 鼓舞人心的火花和奇妙的提示"
+          items={prompts}
+          wrap
+        />
       </div>
     )
   }
@@ -155,26 +173,35 @@ function AIChat () {
       <div className={styles.chatContent} ref={scrollDiv}>
         {/* 对话列表 */}
         {conversations.map((item) => MessageItem(item))}
-        {/* 提示词语 */}
-        <PromptsRender visible={conversations.length <= 0} onClick={(text) => {
-          requestConversation(text)
-        }} />
+
+        <PromptsRender
+        visible={conversations.length <= 0}
+        onClick={(text) => {
+          setValue(text)
+          senderRef.current?.focus()
+          // requestConversation(text)
+        }}
+      />
       </div>
+      {/* 提示词语 */}
+    
       {/* 输入框 */}
       <div className={styles.comment}>
-        <Sender
-          loading={loading}
-          value={value}
-          placeholder="给 deepseek 发消息"
-          ref={senderRef}
-          onChange={setValue}
-          onSubmit={() => {
-            requestConversation(value)
-          }}
-          onCancel={() => {
-            setLoading(false)
-          }}
-        />
+        <div className={styles.commentContainer}>
+          <Sender
+            loading={loading}
+            value={value}
+            placeholder="给 deepseek 发消息"
+            ref={senderRef}
+            onChange={setValue}
+            onSubmit={() => {
+              requestConversation(value)
+            }}
+            onCancel={cancelRequest}
+          />
+
+          <div className={styles.commentTip}>内容由 AI 生成，请仔细甄别</div>
+        </div>
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ function App() {
 
   return (
     <>
-      <div> 
+      <div style={{height: '100vh'}}> 
         <AIChat />
       </div>
     </>
