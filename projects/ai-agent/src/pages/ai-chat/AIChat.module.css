@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.chatContent {
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 10px;
+  flex: 1;
+  overflow: scroll;
+  gap: 10px;
+}
+.comment {
+  margin: 0 10px 20px 10px;
+}
