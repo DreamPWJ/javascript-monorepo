@@ -132,7 +132,7 @@ function AIChat() {
   }
 
   const PromptsRender = (params: { visible: boolean; onClick: (text: string) => void }) => {
-    const [prompts, setPrompt] = useState<PromptProps[]>([
+    const [prompts] = useState<PromptProps[]>([
       {
         key: '1',
         description: '今天的天气怎么样？',
