@@ -25,7 +25,7 @@ type Conversation = {
 }
 
 type Message = {
-  type: 'text' | 'file',
+  type: 'text' | 'file'
   content: string
 }
 
@@ -40,46 +40,46 @@ const renderMarkdown = (message: Message) => (
 )
 
 const getUrlParameter = (param: string) => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param); // 获取指定参数的值
-};
+  const urlParams = new URLSearchParams(window.location.search)
+  return urlParams.get(param) // 获取指定参数的值
+}
 
 const removeMultipleUrlParams = (params: string[] = []) => {
-  const url = new URL(window.location.href);
-  params.forEach(param => url.searchParams.delete(param)); // 删除多个参数
-  window.history.replaceState({}, '', url.toString());
-};
+  const url = new URL(window.location.href)
+  params.forEach((param) => url.searchParams.delete(param)) // 删除多个参数
+  window.history.replaceState({}, '', url.toString())
+}
 
 /**
  * 对话列表
  * @returns
  */
 function AIChat () {
-
-  
+  console.log('AIChat')
 
   const scrollDiv = useRef<HTMLDivElement | null>(null)
   const senderRef = useRef<GetRef<typeof Sender>>(null)
 
-  const [value, setValue] = useState<string>('')
   const [cancelTokenSource, setCancelTokenSource] = useState<CancelTokenSource | null>(null)
-
 
   const [conversations, setConversation] = useState<Conversation[]>([])
 
-  const [messageApi, contextHolder] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage()
 
   const [leaguerId, setLeaguerId] = useState<string | null>(null)
 
-  useEffect(()=>{
-    const leaguerId = getUrlParameter('leaguerId')?.trim() || localStorage.getItem('leaguerId')
+  useEffect(() => {
+    const id = getUrlParameter('leaguerId')?.trim()
+    if (!id) {
+      // 跳转到公众号内登录
+      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
+      return
+    }
+    localStorage.setItem('leaguerId', id?.toString() || '')
 
-    localStorage.setItem('leaguerId', leaguerId?.toString() || '')
-  
     removeMultipleUrlParams(['leaguerId'])
 
-    setLeaguerId(leaguerId)
-
+    setLeaguerId(id)
   }, [])
 
   useEffect(() => {
@@ -113,52 +113,57 @@ function AIChat () {
     // 请求接口 数据
     const cancelToken = getAxios().CancelToken.source()
     setCancelTokenSource(cancelToken)
-    setValue('')
-    request.post('/api/chat', {
-      leaguer_id: '778c20561b2c4b2bbc640c66b2cb8e50',
-      chat_content: input
-    }, {
-      cancelToken: cancelToken.token
-    }).then(res => {
-      console.log(res.data)
+    request
+      .post(
+        '/api/chat',
+        {
+          leaguer_id: '778c20561b2c4b2bbc640c66b2cb8e50',
+          chat_content: input,
+        },
+        {
+          cancelToken: cancelToken.token,
+        },
+      )
+      .then((res) => {
+        // console.log(res.data)
 
+        if (res.data.code === 200) {
+          setConversation((prevItems) => {
+            // 获取最后一项并更新
+            const updatedItems = [...prevItems]
+            const lastItemIndex = updatedItems.length - 1
+            updatedItems[lastItemIndex] = {
+              ...updatedItems[lastItemIndex],
+              content: res.data.data,
+              loading: false,
+            }
 
-      if (res.data.code === 200) {
-        setConversation(prevItems => {
-          // 获取最后一项并更新
-          const updatedItems = [...prevItems];
-          const lastItemIndex = updatedItems.length - 1;
-          updatedItems[lastItemIndex] = { ...updatedItems[lastItemIndex], content: res.data.data, loading: false, };
-
-          return updatedItems;
-        });
-      } else {
-        messageApi.open({
-          type: 'error',
-          content: res.data.msg,
-        });
-      }
-
-
-    }).catch(error => {
-      if (!getAxios().isCancel(error)) {
-        // 不是主动取消的 说明请求失败了
-        clearLastMessage()
-        messageApi.open({
-          type: 'error',
-          content: '服务器繁忙，请稍后尝试',
-        });
-      }
-    }).finally(() => {
-      setCancelTokenSource(null)
-    })
-
-
-
+            return updatedItems
+          })
+        } else {
+          messageApi.open({
+            type: 'error',
+            content: res.data.msg || '出错了',
+          })
+          clearLastMessage()
+        }
+      })
+      .catch((error) => {
+        if (!getAxios().isCancel(error)) {
+          // 不是主动取消的 说明请求失败了
+          clearLastMessage()
+          messageApi.open({
+            type: 'error',
+            content: '服务器繁忙，请稍后尝试',
+          })
+        }
+      })
+      .finally(() => {
+        setCancelTokenSource(null)
+      })
   }
 
   const clearLastMessage = () => {
-
     setConversation((prevConversations) => {
       if (prevConversations.length === 0) return prevConversations
 
@@ -173,7 +178,6 @@ function AIChat () {
       }
     })
   }
-
 
   const MessageItem = (conversation: Conversation) => {
     let avatar: AvatarProps = {}
@@ -239,38 +243,10 @@ function AIChat () {
     )
   }
 
-
-  const ContentRender = (params: { leaguerId: string | null }) => {
-
-    if (!params.leaguerId || params.leaguerId.length <= 0) {
-
-      return <Alert
-        style={{ marginTop: 40 }}
-        message="提示"
-        description="请通过公众号内部链接打开。"
-        type="error"
-        showIcon
-      />
-    }
+  const CommentInput = () => {
+    const [value, setValue] = useState<string>('')
 
     return <>
-
-      <div className={styles.chatContent} ref={scrollDiv}>
-        {/* 对话列表 */}
-        {conversations.map((item) => MessageItem(item))}
-
-        <PromptsRender
-          visible={conversations.length <= 0}
-          onClick={(text) => {
-            setValue(text)
-            senderRef.current?.focus()
-            // requestConversation(text)
-          }}
-        />
-      </div>
-      {/* 提示词语 */}
-
-      {/* 输入框 */}
       <div className={styles.comment}>
         <div className={styles.commentContainer}>
           <Sender
@@ -280,6 +256,7 @@ function AIChat () {
             ref={senderRef}
             onChange={setValue}
             onSubmit={() => {
+              setValue('')
               requestConversation(value)
             }}
             onCancel={() => {
@@ -292,17 +269,29 @@ function AIChat () {
         </div>
       </div>
     </>
-
-
   }
 
   return (
     <div className={styles.container}>
       {contextHolder}
+      {leaguerId && leaguerId.length > 0 && (
+        <>
+          <div className={styles.chatContent} ref={scrollDiv}>
+            {/* 对话列表 */}
+            {conversations.map((item) => MessageItem(item))}
 
-
-      <ContentRender leaguerId={leaguerId} />
-
+            <PromptsRender
+              visible={conversations.length <= 0}
+              onClick={(text) => {
+                // setValue(text)
+                // senderRef.current?.focus()
+                requestConversation(text)
+              }}
+            />
+          </div>
+          <CommentInput />
+        </>
+      )}
     </div>
   )
 }
