@@ -2,8 +2,10 @@ import { Bubble, BubbleProps, Sender, Prompts, PromptProps } from '@ant-design/x
 import styles from './AIChat.module.css'
 import React, { useEffect, useRef, useState } from 'react'
 import { OpenAIOutlined, UserOutlined } from '@ant-design/icons'
-import { AvatarProps, GetRef, Typography } from 'antd'
+import { Alert, AvatarProps, GetRef, message, Typography } from 'antd'
 import markdownit from 'markdown-it'
+import request, { getAxios } from '@/request'
+import { CancelTokenSource } from 'axios'
 
 const aiAvatar: React.CSSProperties = {
   color: '#f56a00',
@@ -18,40 +20,67 @@ const userAvatar: React.CSSProperties = {
 type Conversation = {
   id: string
   role: 'user' | 'system'
-  content: string
+  content: Message
   loading?: boolean
+}
+
+type Message = {
+  type: 'text' | 'file',
+  content: string
 }
 
 const md = markdownit({ html: true, breaks: true })
 md.renderer.rules.paragraph_open = () => ''
 md.renderer.rules.paragraph_close = () => ''
-const renderMarkdown: BubbleProps['messageRender'] = (content) => (
+const renderMarkdown = (message: Message) => (
   <Typography>
     {/* biome-ignore lint/security/noDangerouslySetInnerHtml: used in demo */}
-    <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
+    <div dangerouslySetInnerHTML={{ __html: md.render(message.content) }} />
   </Typography>
 )
+
+const getUrlParameter = (param: string) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param); // 获取指定参数的值
+};
+
+const removeMultipleUrlParams = (params: string[] = []) => {
+  const url = new URL(window.location.href);
+  params.forEach(param => url.searchParams.delete(param)); // 删除多个参数
+  window.history.replaceState({}, '', url.toString());
+};
 
 /**
  * 对话列表
  * @returns
  */
-function AIChat() {
+function AIChat () {
+
+  
+
   const scrollDiv = useRef<HTMLDivElement | null>(null)
   const senderRef = useRef<GetRef<typeof Sender>>(null)
 
   const [value, setValue] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
+  const [cancelTokenSource, setCancelTokenSource] = useState<CancelTokenSource | null>(null)
 
-  const array = Array.from({ length: 0 }, (_, index) => {
-    return {
-      id: `${index}`,
-      role: 'user',
-      content: 'sadfsadf设置子元素之间的间隔x的间隔 a  间的间隔dsadf',
-    } as Conversation
-  })
 
-  const [conversations, setConversation] = useState<Conversation[]>(array)
+  const [conversations, setConversation] = useState<Conversation[]>([])
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [leaguerId, setLeaguerId] = useState<string | null>(null)
+
+  useEffect(()=>{
+    const leaguerId = getUrlParameter('leaguerId')?.trim() || localStorage.getItem('leaguerId')
+
+    localStorage.setItem('leaguerId', leaguerId?.toString() || '')
+  
+    removeMultipleUrlParams(['leaguerId'])
+
+    setLeaguerId(leaguerId)
+
+  }, [])
 
   useEffect(() => {
     if (scrollDiv.current) {
@@ -70,31 +99,72 @@ function AIChat() {
       {
         id: `user_${conversations.length}`,
         role: 'user',
-        content: input,
+        content: { type: 'text', content: input },
         loading: false,
       },
       {
         id: `system_${conversations.length}`,
         role: 'system',
-        content: '',
+        content: { type: 'text', content: '' },
         loading: true,
       },
     ])
-    setLoading(true)
 
+    // 请求接口 数据
+    const cancelToken = getAxios().CancelToken.source()
+    setCancelTokenSource(cancelToken)
     setValue('')
+    request.post('/api/chat', {
+      leaguer_id: '778c20561b2c4b2bbc640c66b2cb8e50',
+      chat_content: input
+    }, {
+      cancelToken: cancelToken.token
+    }).then(res => {
+      console.log(res.data)
 
-    // TODO: 请求接口 数据
+
+      if (res.data.code === 200) {
+        setConversation(prevItems => {
+          // 获取最后一项并更新
+          const updatedItems = [...prevItems];
+          const lastItemIndex = updatedItems.length - 1;
+          updatedItems[lastItemIndex] = { ...updatedItems[lastItemIndex], content: res.data.data, loading: false, };
+
+          return updatedItems;
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: res.data.msg,
+        });
+      }
+
+
+    }).catch(error => {
+      if (!getAxios().isCancel(error)) {
+        // 不是主动取消的 说明请求失败了
+        clearLastMessage()
+        messageApi.open({
+          type: 'error',
+          content: '服务器繁忙，请稍后尝试',
+        });
+      }
+    }).finally(() => {
+      setCancelTokenSource(null)
+    })
+
+
+
   }
 
-  const cancelRequest = () => {
-    setLoading(false)
+  const clearLastMessage = () => {
+
     setConversation((prevConversations) => {
       if (prevConversations.length === 0) return prevConversations
 
       const lastMessage = prevConversations.at(-1)
 
-      if (!lastMessage?.content || lastMessage?.content.length <= 0) {
+      if (!lastMessage?.content || lastMessage?.content?.content.length <= 0) {
         return prevConversations.slice(0, -1)
       } else {
         return prevConversations.map((conversation, index) =>
@@ -103,6 +173,7 @@ function AIChat() {
       }
     })
   }
+
 
   const MessageItem = (conversation: Conversation) => {
     let avatar: AvatarProps = {}
@@ -143,7 +214,7 @@ function AIChat() {
       },
       {
         key: '3',
-        description: '万达停车场剩余车位多少？',
+        description: '家家乐停车场还有车位吗?',
       },
       {
         key: '4',
@@ -168,41 +239,70 @@ function AIChat() {
     )
   }
 
-  return (
-    <div className={styles.container}>
+
+  const ContentRender = (params: { leaguerId: string | null }) => {
+
+    if (!params.leaguerId || params.leaguerId.length <= 0) {
+
+      return <Alert
+        style={{ marginTop: 40 }}
+        message="提示"
+        description="请通过公众号内部链接打开。"
+        type="error"
+        showIcon
+      />
+    }
+
+    return <>
+
       <div className={styles.chatContent} ref={scrollDiv}>
         {/* 对话列表 */}
         {conversations.map((item) => MessageItem(item))}
 
         <PromptsRender
-        visible={conversations.length <= 0}
-        onClick={(text) => {
-          setValue(text)
-          senderRef.current?.focus()
-          // requestConversation(text)
-        }}
-      />
+          visible={conversations.length <= 0}
+          onClick={(text) => {
+            setValue(text)
+            senderRef.current?.focus()
+            // requestConversation(text)
+          }}
+        />
       </div>
       {/* 提示词语 */}
-    
+
       {/* 输入框 */}
       <div className={styles.comment}>
         <div className={styles.commentContainer}>
           <Sender
-            loading={loading}
+            loading={cancelTokenSource != null}
             value={value}
-            placeholder="给 deepseek 发消息"
+            placeholder="给 小蓝AI 发消息"
             ref={senderRef}
             onChange={setValue}
             onSubmit={() => {
               requestConversation(value)
             }}
-            onCancel={cancelRequest}
+            onCancel={() => {
+              cancelTokenSource?.cancel()
+              clearLastMessage()
+            }}
           />
 
           <div className={styles.commentTip}>内容由 AI 生成，请仔细甄别</div>
         </div>
       </div>
+    </>
+
+
+  }
+
+  return (
+    <div className={styles.container}>
+      {contextHolder}
+
+
+      <ContentRender leaguerId={leaguerId} />
+
     </div>
   )
 }
