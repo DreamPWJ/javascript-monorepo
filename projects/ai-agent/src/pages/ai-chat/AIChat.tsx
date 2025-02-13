@@ -72,7 +72,7 @@ function AIChat () {
     const id = getUrlParameter('leaguerId')?.trim()
     if (!id) {
       // 跳转到公众号内登录
-      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
+      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}/#/thirdAuth`
       return
     }
     localStorage.setItem('leaguerId', id?.toString() || '')
@@ -117,7 +117,7 @@ function AIChat () {
       .post(
         '/api/chat',
         {
-          leaguer_id: '778c20561b2c4b2bbc640c66b2cb8e50',
+          leaguer_id: leaguerId,
           chat_content: input,
         },
         {
