@@ -1,9 +1,9 @@
 import axios from "axios"
 
-
+// console.log('import.meta.env.VITE_BASE_URL', import.meta.env.VITE_BASE_URL)
 
 const request = axios.create({
-  baseURL: 'http://192.168.0.100:5000',
+  baseURL: import.meta.env.VITE_BASE_URL,
   timeout: 2000 * 10
 })
 

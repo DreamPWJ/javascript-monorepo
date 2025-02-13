@@ -210,19 +210,15 @@ function AIChat () {
     const [prompts] = useState<PromptProps[]>([
       {
         key: '1',
-        description: '今天的天气怎么样？',
-      },
-      {
-        key: '2',
-        description: '正月十五传统有哪些？',
+        description: '请告诉我已绑定的车牌？',
       },
       {
         key: '3',
-        description: '家家乐停车场还有车位吗?',
+        description: '万达停车场收费标准?',
       },
       {
         key: '4',
-        description: '现在我的车在万平口停车费用是多少？',
+        description: '日照好停车客服是多少？',
       },
     ])
 
