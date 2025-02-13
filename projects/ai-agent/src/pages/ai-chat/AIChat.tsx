@@ -1,7 +1,7 @@
 import { Bubble, Sender, Prompts, PromptProps } from '@ant-design/x'
 import styles from './AIChat.module.css'
 import React, { useEffect, useRef, useState } from 'react'
-import { OpenAIOutlined, UserOutlined } from '@ant-design/icons'
+import { SmileOutlined, UserOutlined } from '@ant-design/icons'
 import { AvatarProps, GetRef, message, Typography } from 'antd'
 import markdownit from 'markdown-it'
 import request, { getAxios } from '@/request'
@@ -201,7 +201,7 @@ function AIChat () {
       }
     } else {
       avatar = {
-        icon: <OpenAIOutlined />,
+        icon: <SmileOutlined />,
         style: aiAvatar,
       }
     }
