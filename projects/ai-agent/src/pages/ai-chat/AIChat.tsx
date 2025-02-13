@@ -72,7 +72,7 @@ function AIChat () {
     const id = getUrlParameter('leaguerId')?.trim()
     if (!id) {
       // 跳转到公众号内登录
-      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}/#/thirdAuth`
+      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
       return
     }
     localStorage.setItem('leaguerId', id?.toString() || '')
@@ -218,7 +218,7 @@ function AIChat () {
       },
       {
         key: '4',
-        description: '日照好停车客服是多少？',
+        description: '日照好停车客服联系方式是多少？',
       },
     ])
 
