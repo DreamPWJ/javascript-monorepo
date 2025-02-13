@@ -264,7 +264,7 @@ function AIChat () {
             }}
           />
 
-          <div className={styles.commentTip}>内容由 AI 生成</div>
+          <div className={styles.commentTip}>内容由 AI 生成，请仔细甄别</div>
         </div>
       </div>
     </>
