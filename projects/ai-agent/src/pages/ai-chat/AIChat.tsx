@@ -219,7 +219,7 @@ function AIChat () {
       },
       {
         key: '4',
-        description: '日照好停车客服联系方式是多少？',
+        description: '日照好停车客服电话号码？',
       },
     ])
 
@@ -249,7 +249,7 @@ function AIChat () {
           <Sender
             loading={cancelTokenSource != null}
             value={value}
-            placeholder="给 小蓝AI 发消息"
+            placeholder="给 蓝能AI 发消息"
             ref={senderRef}
             onChange={setValue}
             onSubmit={() => {
@@ -262,7 +262,7 @@ function AIChat () {
             }}
           />
 
-          <div className={styles.commentTip}>内容由 AI 生成，请仔细甄别</div>
+          <div className={styles.commentTip}>内容由 AI 生成</div>
         </div>
       </div>
     </>

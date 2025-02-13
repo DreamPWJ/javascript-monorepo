@@ -5,6 +5,7 @@
   max-width: 800px;
   margin: 0 auto;
 }
+
 .chatContent {
   display: flex;
   flex-direction: column;
@@ -16,6 +17,7 @@
   /* scrollbar-width: none;
   -ms-overflow-style: none; */
 }
+
 .comment {
   width: 100%;
   /* position: fixed;
@@ -32,9 +34,10 @@
   align-items: center;
   margin: 0 10px;
 }
+
 .commentTip {
+  margin-top: 12px;
+  margin-bottom: 20px;
   font-size: 12px;
   color: #999;
-  margin-bottom: 20px;
-  margin-top: 2px;
 }
