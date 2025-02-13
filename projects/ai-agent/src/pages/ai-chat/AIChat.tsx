@@ -1,7 +1,7 @@
 import { Bubble, Sender, Prompts, PromptProps } from '@ant-design/x'
 import styles from './AIChat.module.css'
 import React, { useEffect, useRef, useState } from 'react'
-import { SmileOutlined, UserOutlined } from '@ant-design/icons'
+import { BulbOutlined, FireOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons'
 import { AvatarProps, GetRef, message, Typography } from 'antd'
 import markdownit from 'markdown-it'
 import request, { getAxios } from '@/request'
@@ -225,14 +225,28 @@ function AIChat () {
       {
         key: '1',
         description: '请告诉我已绑定的车牌？',
+        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
+      },
+      {
+        key: '2',
+        description: '我最近的一条停车记录',
+        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
       },
       {
         key: '3',
         description: '万达停车场收费标准?',
+        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
       },
+      
       {
         key: '4',
         description: '日照好停车客服电话号码？',
+        icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
+      },
+      {
+        key: '5',
+        description: '万平口1号剩余泊位数?',
+        icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
       },
     ])
 
@@ -242,12 +256,24 @@ function AIChat () {
     return (
       <div>
         <Prompts
+         styles={{
+          item: {
+            flex: 'none',
+            width: '100%',
+            backgroundImage: `linear-gradient(137deg, #e5f4ff 0%, #efe7ff 100%)`,
+            border: 0,
+          },
+          subItem: {
+            background: 'rgba(255,255,255,0.45)',
+            border: '1px solid #FFF',
+          },
+        }}
           onItemClick={(info) => {
             params.onClick?.(info.data?.description?.toString() || '')
           }}
-          title="✨ 鼓舞人心的火花和奇妙的提示"
+          title="🤔 你可能也想问:"
           items={prompts}
-          wrap
+          vertical
         />
       </div>
     )
