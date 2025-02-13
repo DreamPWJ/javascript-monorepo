@@ -67,6 +67,7 @@ function AIChat () {
   const [messageApi, contextHolder] = message.useMessage()
 
   const [leaguerId, setLeaguerId] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage]  = useState<string | null>(null)
 
   useEffect(() => {
     const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
@@ -83,8 +84,10 @@ function AIChat () {
 
     if (id === 'null') {
       setLeaguerId(null)
+      setErrorMessage('登陆失败，请在好停车公众号内打开')
     } else {
       setLeaguerId(id)
+      setErrorMessage(null)
     }
 
  
@@ -300,8 +303,8 @@ function AIChat () {
         </>
       )}
       {
-        (!leaguerId || leaguerId.length <=0) && <>
-          <div className={styles.commentTip}>登陆失败，请在好停车公众号内打开</div>
+        (errorMessage && errorMessage.length > 0) && <>
+          <div className={styles.commentTip}>{errorMessage}</div>
         </>
       }
     </div>
