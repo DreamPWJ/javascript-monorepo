@@ -80,7 +80,9 @@ function AIChat () {
     removeMultipleUrlParams(['leaguerId'])
 
     setLeaguerId(id)
-    document.title = '蓝能AI'
+    setTimeout(() => {
+      document.title = '蓝能AI'
+    }, 300);
   }, [])
 
   useEffect(() => {
