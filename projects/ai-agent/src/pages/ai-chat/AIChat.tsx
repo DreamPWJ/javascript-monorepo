@@ -69,7 +69,9 @@ function AIChat () {
   const [leaguerId, setLeaguerId] = useState<string | null>(null)
 
   useEffect(() => {
-    const id = getUrlParameter('leaguerId')?.trim()
+    const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
+
+
     if (!id) {
       // 跳转到公众号内登录
       window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
@@ -79,7 +81,15 @@ function AIChat () {
 
     removeMultipleUrlParams(['leaguerId'])
 
-    setLeaguerId(id)
+    if (id === 'null') {
+      console.log('=====')
+      setLeaguerId(null)
+      
+    } else {
+      setLeaguerId(id)
+    }
+
+ 
     setTimeout(() => {
       document.title = '蓝能AI'
     }, 300);
@@ -291,6 +301,11 @@ function AIChat () {
           <CommentInput />
         </>
       )}
+      {
+        (!leaguerId || leaguerId.length <=0) && <>
+          <div className={styles.commentTip}>登陆失败，请在好停车公众号内打开</div>
+        </>
+      }
     </div>
   )
 }
