@@ -72,7 +72,7 @@ function AIChat () {
     const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
 
 
-    if (!id) {
+    if (!id || id.length <= 0) {
       // 跳转到公众号内登录
       window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
       return
@@ -82,9 +82,7 @@ function AIChat () {
     removeMultipleUrlParams(['leaguerId'])
 
     if (id === 'null') {
-      console.log('=====')
       setLeaguerId(null)
-      
     } else {
       setLeaguerId(id)
     }
@@ -92,7 +90,7 @@ function AIChat () {
  
     setTimeout(() => {
       document.title = '蓝能AI'
-    }, 300);
+    }, 350);
   }, [])
 
   useEffect(() => {
