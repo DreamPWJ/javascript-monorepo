@@ -1,15 +1,16 @@
 import { Bubble, Sender, Prompts, PromptProps } from '@ant-design/x'
 import styles from './AIChat.module.css'
 import React, { useEffect, useRef, useState } from 'react'
-import { BulbOutlined, FireOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons'
+import { BulbOutlined, FireOutlined, UserOutlined } from '@ant-design/icons'
 import { AvatarProps, GetRef, message, Typography } from 'antd'
 import markdownit from 'markdown-it'
 import request, { getAxios } from '@/request'
 import { CancelTokenSource } from 'axios'
+import AIAvatar from '@/assets/ai-avatar.png'
 
 const aiAvatar: React.CSSProperties = {
-  color: '#f56a00',
-  backgroundColor: '#fde3cf',
+  color: '#4e6afb',
+  backgroundColor: '#dceafe',
 }
 
 const userAvatar: React.CSSProperties = {
@@ -90,7 +91,7 @@ function AIChat () {
       setErrorMessage(null)
     }
 
- 
+
     setTimeout(() => {
       document.title = '蓝能AI'
     }, 350);
@@ -202,7 +203,7 @@ function AIChat () {
       }
     } else {
       avatar = {
-        icon: <SmileOutlined />,
+        icon: <img src={AIAvatar}  />,
         style: aiAvatar,
       }
     }
@@ -237,7 +238,7 @@ function AIChat () {
         description: '万达停车场收费标准?',
         icon: <BulbOutlined style={{ color: '#FFD700' }} />,
       },
-      
+
       {
         key: '4',
         description: '日照好停车客服电话号码？',
@@ -301,7 +302,7 @@ function AIChat () {
             }}
           />
 
-          <div className={styles.commentTip}>内容由 AI 生成，请仔细甄别</div>
+          <div className={styles.commentTip}>本功能由AI技术生成，更多服务请联系人工客服。</div>
         </div>
       </div>
     </>
