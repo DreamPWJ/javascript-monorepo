@@ -230,7 +230,7 @@ function AIChat () {
       },
       {
         key: '2',
-        description: '我最近的一条停车记录',
+        description: '我在万达的最近一条停车记录',
         icon: <BulbOutlined style={{ color: '#FFD700' }} />,
       },
       {
@@ -246,7 +246,7 @@ function AIChat () {
       },
       {
         key: '5',
-        description: '万平口1号剩余泊位数?',
+        description: '万达还有停车位吗?',
         icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
       },
     ])
