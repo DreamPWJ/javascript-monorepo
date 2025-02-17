@@ -1,6 +1,6 @@
 import { Bubble, Sender, Prompts, PromptProps } from '@ant-design/x'
 import styles from './AIChat.module.css'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { memo, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BulbOutlined, FireOutlined, UserOutlined } from '@ant-design/icons'
 import { AvatarProps, GetRef, message, Typography } from 'antd'
 import markdownit from 'markdown-it'
@@ -56,7 +56,6 @@ const removeMultipleUrlParams = (params: string[] = []) => {
  * @returns
  */
 function AIChat () {
-  console.log('AIChat')
 
   const scrollDiv = useRef<HTMLDivElement | null>(null)
   const senderRef = useRef<GetRef<typeof Sender>>(null)
@@ -68,11 +67,12 @@ function AIChat () {
   const [messageApi, contextHolder] = message.useMessage()
 
   const [leaguerId, setLeaguerId] = useState<string | null>(null)
-  const [errorMessage, setErrorMessage]  = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
 
+    console.log('AIChat')
+    const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
 
     if (!id || id.length <= 0) {
       // 跳转到公众号内登录
@@ -91,10 +91,9 @@ function AIChat () {
       setErrorMessage(null)
     }
 
-
     setTimeout(() => {
       document.title = '蓝能AI'
-    }, 350);
+    }, 350)
   }, [])
 
   useEffect(() => {
@@ -124,6 +123,7 @@ function AIChat () {
         loading: true,
       },
     ])
+
 
     // 请求接口 数据
     const cancelToken = getAxios().CancelToken.source()
@@ -203,7 +203,7 @@ function AIChat () {
       }
     } else {
       avatar = {
-        icon: <img src={AIAvatar}  />,
+        icon: <img src={AIAvatar} />,
         style: aiAvatar,
       }
     }
@@ -221,119 +221,111 @@ function AIChat () {
     )
   }
 
-  const PromptsRender = (params: { visible: boolean; onClick: (text: string) => void }) => {
-    const [prompts] = useState<PromptProps[]>([
-      {
-        key: '1',
-        description: '请告诉我已绑定的车牌？',
-        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
-      },
-      {
-        key: '2',
-        description: '我在万达的最近一条停车记录',
-        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
-      },
-      {
-        key: '3',
-        description: '万达停车场收费标准?',
-        icon: <BulbOutlined style={{ color: '#FFD700' }} />,
-      },
+  const PromptsRender = useCallback(
+    ({ visible, onClick }: { visible: boolean; onClick?: (text: string) => void }) => {
+      const [prompts, setPrompts] = useState<PromptProps[]>([])
 
-      {
-        key: '4',
-        description: '日照好停车客服电话号码？',
-        icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
-      },
-      {
-        key: '5',
-        description: '万达还有停车位吗?',
-        icon: <FireOutlined style={{ color: '#FF4D4F' }} />,
-      },
-    ])
+      useEffect(() => {
+        request.get('/api/prompt').then(res => {
+          if (res.data.code === 200) {
+            const data = res.data.data.map((item: any) => {
+              return {
+                key: item,
+                description: item,
+              }
+            })
+            setPrompts(data)
+          }
+        })
+      }, [])
 
-    if (!params.visible) {
-      return <></>
-    }
-    return (
-      <div>
-        <Prompts
-         styles={{
-          item: {
-            flex: 'none',
-            width: '100%',
-            backgroundImage: `linear-gradient(137deg, #e5f4ff 0%, #efe7ff 100%)`,
-            border: 0,
-          },
-          subItem: {
-            background: 'rgba(255,255,255,0.45)',
-            border: '1px solid #FFF',
-          },
-        }}
-          onItemClick={(info) => {
-            params.onClick?.(info.data?.description?.toString() || '')
-          }}
-          title="🤔 你可能也想问:"
-          items={prompts}
-          vertical
-        />
-      </div>
-    )
-  }
+      if (!visible) {
+        return <></>
+      }
+      return (
+        <div>
+          <Prompts
+            styles={{
+              item: {
+                flex: 'none',
+                width: '100%',
+                backgroundImage: `linear-gradient(137deg, #e5f4ff 0%, #efe7ff 100%)`,
+                border: 0,
+              },
+              subItem: {
+                background: 'rgba(255,255,255,0.45)',
+                border: '1px solid #FFF',
+              },
+            }}
+            onItemClick={(info) => {
+              onClick?.(info.data?.description?.toString() || '')
+            }}
+            title="🤔 你可能也想问:"
+            items={prompts}
+            vertical
+          />
+        </div>
+      )
+    },
+    [],
+  )
+
+  const visiblePromptsRender = useMemo(() => {
+    return (leaguerId && leaguerId.length > 0 && conversations.length <= 0) as boolean
+  }, [leaguerId, conversations])
+
+
 
   const CommentInput = () => {
     const [value, setValue] = useState<string>('')
 
-    return <>
-      <div className={styles.comment}>
-        <div className={styles.commentContainer}>
-          <Sender
-            loading={cancelTokenSource != null}
-            value={value}
-            placeholder="给 蓝能AI 发消息"
-            ref={senderRef}
-            onChange={setValue}
-            onSubmit={() => {
-              setValue('')
-              requestConversation(value)
-            }}
-            onCancel={() => {
-              cancelTokenSource?.cancel()
-              clearLastMessage()
-            }}
-          />
+    return (
+      <>
+        <div className={styles.comment}>
+          <div className={styles.commentContainer}>
+            <Sender
+              loading={cancelTokenSource != null}
+              value={value}
+              placeholder="给 蓝能AI 发消息"
+              ref={senderRef}
+              onChange={setValue}
+              onSubmit={() => {
+                setValue('')
+                requestConversation(value)
+              }}
+              onCancel={() => {
+                cancelTokenSource?.cancel()
+                clearLastMessage()
+              }}
+            />
 
-          <div className={styles.commentTip}>本功能由AI技术生成，更多服务请联系人工客服。</div>
+            <div className={styles.commentTip}>本功能由AI技术生成，更多服务请联系人工客服。</div>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    )
   }
 
   return (
     <div className={styles.container}>
       {contextHolder}
+
       {leaguerId && leaguerId.length > 0 && (
         <>
           <div className={styles.chatContent} ref={scrollDiv}>
             {/* 对话列表 */}
             {conversations.map((item) => MessageItem(item))}
-
-            <PromptsRender
-              visible={conversations.length <= 0}
-              onClick={(text) => {
-                // setValue(text)
-                // senderRef.current?.focus()
-                requestConversation(text)
-              }}
-            />
+            <PromptsRender visible={visiblePromptsRender} onClick={requestConversation} />
           </div>
           <CommentInput />
         </>
       )}
-      {
-        (errorMessage && errorMessage.length > 0) && <>
+
+      {errorMessage && errorMessage.length > 0 && (
+        <>
           <div className={styles.commentTip}>{errorMessage}</div>
         </>
-      }
+      )}
     </div>
   )
 }
