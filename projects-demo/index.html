@@ -68,6 +68,11 @@
         opacity: 1;
       }
     }
+
+    #fraction {
+      margin-top: 24px;
+      font-size: 24px;
+    }
   </style>
 </head>
 <body>
@@ -76,6 +81,7 @@
   <h1>日照港一小董倩倩学英语真有趣</h1>
   <div id="word">apple</div>
   <input type="text" id="input" placeholder="请输入英文单词..." autofocus>
+  <div id="fraction">得分: 0</div>
 </div>
 <div class="stars" style="bottom: 20px; right: 20px; top: auto; left: auto;">✨</div>
 
@@ -91,9 +97,11 @@
     { en: 'bird', zh: '鸟' }
   ]
 
+  let fraction = 0
   let currentIndex = 0
   const wordDisplay = document.getElementById('word')
   const input = document.getElementById('input')
+  const fractionDiv = document.getElementById('fraction')
 
   function showNextWord() {
     wordDisplay.style.opacity = 0
@@ -101,18 +109,33 @@
       currentIndex = (currentIndex + 1) % words.length
       wordDisplay.textContent = words[currentIndex].en
       wordDisplay.style.opacity = 1
+      fractionDiv.textContent = '总得分: ' + fraction
     }, 500)
   }
 
   input.addEventListener('input', function() {
     if (this.value.toLowerCase() === words[currentIndex].en) {
+      fraction++
       this.value = ''
+      wordDisplay.textContent = '你真棒啊'
+      // 创建语音合成实例
+      const utterance = new SpeechSynthesisUtterance('你真棒!')
+      // 设置语言
+      utterance.lang = 'zh-cn'
+      // 设置音调
+      utterance.pitch = 1
+      // 设置语速
+      utterance.rate = 1
+      // 播放语音
+      window.speechSynthesis.speak(utterance)
       showNextWord()
     }
   })
 
   // 初始化显示第一个单词
   wordDisplay.textContent = words[currentIndex].en
+
+
 </script>
 </body>
 </html>
