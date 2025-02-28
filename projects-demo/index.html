@@ -13,26 +13,31 @@
       margin: 0;
       font-family: 'Comic Sans MS', cursive;
     }
+
     .container {
       text-align: center;
       background: #fffacd;
-      padding: 30px;
+      padding: 80px;
       border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       border: 5px solid #ff69b4;
     }
+
     h1 {
       color: #ff4500;
-      font-size: 40px;
+      font-size: 50px;
       margin-bottom: 20px;
       text-shadow: 2px 2px #ffd700;
     }
+
     #word {
-      font-size: 60px;
+      font-size: 88px;
+      font-weight: bolder;
       color: #0e42d7;
-      margin: 20px 0;
-      transition: opacity 0.5s;
+      margin: 30px 0;
+      transition: opacity 0.8s;
     }
+
     #input {
       font-size: 24px;
       padding: 10px;
@@ -42,64 +47,72 @@
       outline: none;
       font-family: 'Comic Sans MS', cursive;
     }
+
     .stars {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 50px;
+      top: 20px;
+      left: 20px;
+      font-size: 60px;
       color: #ffd700;
       animation: twinkle 1s infinite;
     }
+
     @keyframes twinkle {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+      100% {
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
 <div class="stars">✨</div>
 <div class="container">
-  <h1>日照港一小学董倩倩英语真有趣！</h1>
+  <h1>日照港一小董倩倩学英语真有趣</h1>
   <div id="word">apple</div>
-  <input type="text" id="input" placeholder="输入英文单词..." autofocus>
+  <input type="text" id="input" placeholder="请输入英文单词..." autofocus>
 </div>
-<div class="stars" style="bottom: 10px; right: 10px; top: auto; left: auto;">✨</div>
+<div class="stars" style="bottom: 20px; right: 20px; top: auto; left: auto;">✨</div>
 
 <script>
   const words = [
-    {en: "apple", zh: "苹果"},
-    {en: "cat", zh: "猫"},
-    {en: "dog", zh: "狗"},
-    {en: "ball", zh: "球"},
-    {en: "sun", zh: "太阳"},
-    {en: "moon", zh: "月亮"},
-    {en: "star", zh: "星星"},
-    {en: "bird", zh: "鸟"}
-  ];
+    { en: 'apple', zh: '苹果' },
+    { en: 'cat', zh: '猫' },
+    { en: 'dog', zh: '狗' },
+    { en: 'ball', zh: '球' },
+    { en: 'sun', zh: '太阳' },
+    { en: 'moon', zh: '月亮' },
+    { en: 'star', zh: '星星' },
+    { en: 'bird', zh: '鸟' }
+  ]
 
-  let currentIndex = 0;
-  const wordDisplay = document.getElementById("word");
-  const input = document.getElementById("input");
+  let currentIndex = 0
+  const wordDisplay = document.getElementById('word')
+  const input = document.getElementById('input')
 
   function showNextWord() {
-    wordDisplay.style.opacity = 0;
+    wordDisplay.style.opacity = 0
     setTimeout(() => {
-      currentIndex = (currentIndex + 1) % words.length;
-      wordDisplay.textContent = words[currentIndex].en;
-      wordDisplay.style.opacity = 1;
-    }, 500);
+      currentIndex = (currentIndex + 1) % words.length
+      wordDisplay.textContent = words[currentIndex].en
+      wordDisplay.style.opacity = 1
+    }, 500)
   }
 
-  input.addEventListener("input", function() {
+  input.addEventListener('input', function() {
     if (this.value.toLowerCase() === words[currentIndex].en) {
-      this.value = "";
-      showNextWord();
+      this.value = ''
+      showNextWord()
     }
-  });
+  })
 
   // 初始化显示第一个单词
-  wordDisplay.textContent = words[currentIndex].en;
+  wordDisplay.textContent = words[currentIndex].en
 </script>
 </body>
 </html>
