@@ -76,7 +76,9 @@ function AIChat () {
 
     if (!id || id.length <= 0) {
       // 跳转到公众号内登录
-      window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
+      // window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
+      setLeaguerId(null)
+      setErrorMessage('登陆失败，请在好停车公众号内打开')
       return
     }
     localStorage.setItem('leaguerId', id?.toString() || '')
