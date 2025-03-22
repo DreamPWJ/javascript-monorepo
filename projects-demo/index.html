@@ -1,141 +1,54 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>英语单词学习</title>
-  <style>
-    body {
-      background: linear-gradient(to bottom, #ffebcd, #87ceeb);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Comic Sans MS', cursive;
-    }
-
-    .container {
-      text-align: center;
-      background: #fffacd;
-      padding: 80px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      border: 5px solid #ff69b4;
-    }
-
-    h1 {
-      color: #ff4500;
-      font-size: 50px;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px #ffd700;
-    }
-
-    #word {
-      font-size: 88px;
-      font-weight: bolder;
-      color: #0e42d7;
-      margin: 30px 0;
-      transition: opacity 0.8s;
-    }
-
-    #input {
-      font-size: 24px;
-      padding: 10px;
-      width: 200px;
-      border: 3px solid #ffa500;
-      border-radius: 10px;
-      outline: none;
-      font-family: 'Comic Sans MS', cursive;
-    }
-
-    .stars {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 60px;
-      color: #ffd700;
-      animation: twinkle 1s infinite;
-    }
-
-    @keyframes twinkle {
-      0% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-      100% {
-        opacity: 1;
-      }
-    }
-
-    #fraction {
-      margin-top: 24px;
-      font-size: 24px;
-    }
-  </style>
+  <title>盈亏统计面积图</title>
 </head>
 <body>
-<div class="stars">✨</div>
-<div class="container">
-  <h1>学英语真有趣</h1>
-  <div id="word">apple</div>
-  <input type="text" id="input" placeholder="请输入英文单词..." autofocus>
-  <div id="fraction">得分: 0</div>
-</div>
-<div class="stars" style="bottom: 20px; right: 20px; top: auto; left: auto;">✨</div>
-
+<div id="container" />
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.5.11/dist/g2.min.js"></script>
+<script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.2/dist/data-set.min.js"></script>
 <script>
-  const words = [
-    { en: 'apple', zh: '苹果' },
-    { en: 'cat', zh: '猫' },
-    { en: 'dog', zh: '狗' },
-    { en: 'ball', zh: '球' },
-    { en: 'sun', zh: '太阳' },
-    { en: 'moon', zh: '月亮' },
-    { en: 'star', zh: '星星' },
-    { en: 'bird', zh: '鸟' }
-  ]
-
-  let fraction = 0
-  let currentIndex = 0
-  const wordDisplay = document.getElementById('word')
-  const input = document.getElementById('input')
-  const fractionDiv = document.getElementById('fraction')
-
-  function showNextWord() {
-    wordDisplay.style.opacity = 0
-    setTimeout(() => {
-      currentIndex = (currentIndex + 1) % words.length
-      wordDisplay.textContent = words[currentIndex].en
-      wordDisplay.style.opacity = 1
-      fractionDiv.textContent = '总得分: ' + fraction
-    }, 500)
-  }
-
-  input.addEventListener('input', function() {
-    if (this.value.toLowerCase() === words[currentIndex].en) {
-      fraction++
-      this.value = ''
-      wordDisplay.textContent = '你真棒啊'
-      // 创建语音合成实例
-      const utterance = new SpeechSynthesisUtterance('你真棒!')
-      // 设置语言
-      utterance.lang = 'zh-cn'
-      // 设置音调
-      utterance.pitch = 1
-      // 设置语速
-      utterance.rate = 1
-      // 播放语音
-      window.speechSynthesis.speak(utterance)
-      showNextWord()
+  const data = [
+    { year: '1991', value: 15468 },
+    { year: '1992', value: 16100 },
+    { year: '1993', value: 15900 },
+    { year: '1994', value: -17409 },
+    { year: '1995', value: 17000 },
+    { year: '1996', value: 31056 },
+    { year: '1997', value: 31982 },
+    { year: '1998', value: 32040 },
+    { year: '1999', value: 33233 }
+  ];
+  const chart = new G2.Chart({
+    container: 'container',
+    forceFit: true,
+    height: 600
+  });
+  chart.source(data);
+  chart.scale({
+    value: {
+      min: 10000
+    },
+    year: {
+      range: [ 0, 1 ]
     }
-  })
-
-  // 初始化显示第一个单词
-  wordDisplay.textContent = words[currentIndex].en
-
-
+  });
+  chart.axis('value', {
+    label: {
+      formatter: val => {
+        return (val / 10000).toFixed(1) + 'k';
+      }
+    }
+  });
+  chart.tooltip({
+    crosshairs: {
+      type: 'line'
+    }
+  });
+  chart.area().position('year*value');
+  chart.line().position('year*value').size(2);
+  chart.render();
 </script>
 </body>
 </html>
