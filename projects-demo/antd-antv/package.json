@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@antv/g2": "^5.2.12",
+    "antd": "^5.24.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
