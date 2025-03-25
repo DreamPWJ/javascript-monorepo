@@ -69,16 +69,35 @@ function AIChat () {
   const [leaguerId, setLeaguerId] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+
+  const [prompts, setPrompts] = useState<PromptProps[]>([])
+
+  useEffect(() => {
+    request.get('/api/prompt').then(res => {
+      if (res.data.code === 200) {
+        const data = res.data.data?.map((item: never) => {
+          return {
+            key: item,
+            description: item,
+          }
+        })
+        setPrompts(data)
+      }
+    })
+  }, [])
+
   useEffect(() => {
 
     console.log('AIChat')
     const id = getUrlParameter('leaguerId')?.trim() || import.meta.env.VITE_BASE_LEAGUERID
 
+    const error = import.meta.env.VITE_BASE_LOGIN_ERROR
+
     if (!id || id.length <= 0) {
       // 跳转到公众号内登录
       // window.location.href = `http://jtss.rzbus.cn:18805/?redirect=${window.location.href}#/thirdAuth`
       setLeaguerId(null)
-      setErrorMessage('登陆失败，请在好停车公众号内打开')
+      setErrorMessage(error)
       return
     }
     localStorage.setItem('leaguerId', id?.toString() || '')
@@ -87,14 +106,14 @@ function AIChat () {
 
     if (id === 'null') {
       setLeaguerId(null)
-      setErrorMessage('登陆失败，请在好停车公众号内打开')
+      setErrorMessage(error)
     } else {
       setLeaguerId(id)
       setErrorMessage(null)
     }
 
     setTimeout(() => {
-      document.title = '蓝能AI'
+      document.title = import.meta.env.VITE_BASE_TITLE
     }, 350)
   }, [])
 
@@ -205,7 +224,7 @@ function AIChat () {
       }
     } else {
       avatar = {
-        icon: <img src={AIAvatar} />,
+        icon: <img src={AIAvatar}  alt=''/>,
         style: aiAvatar,
       }
     }
@@ -225,21 +244,7 @@ function AIChat () {
 
   const PromptsRender = useCallback(
     ({ visible, onClick }: { visible: boolean; onClick?: (text: string) => void }) => {
-      const [prompts, setPrompts] = useState<PromptProps[]>([])
 
-      useEffect(() => {
-        request.get('/api/prompt').then(res => {
-          if (res.data.code === 200) {
-            const data = res.data.data.map((item: any) => {
-              return {
-                key: item,
-                description: item,
-              }
-            })
-            setPrompts(data)
-          }
-        })
-      }, [])
 
       if (!visible) {
         return <></>
@@ -269,7 +274,7 @@ function AIChat () {
         </div>
       )
     },
-    [],
+    [prompts],
   )
 
   const visiblePromptsRender = useMemo(() => {
@@ -288,7 +293,7 @@ function AIChat () {
             <Sender
               loading={cancelTokenSource != null}
               value={value}
-              placeholder="给 蓝能AI 发消息"
+              placeholder={`给 ${import.meta.env.VITE_BASE_TITLE} 发消息`}
               ref={senderRef}
               onChange={setValue}
               onSubmit={() => {
