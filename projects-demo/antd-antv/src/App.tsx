@@ -9,7 +9,7 @@ function App() {
   const [count, setCount] = useState(0)
   // 准备数据
   const data = [
-    { date: '1991-05-01', value: 15468 },
+    { date: '1991-05-01', value: 7468 },
     { date: '1992-05-01', value: 16100 },
     { date: '1993-05-01', value: 15900 },
     { date: '1994-05-01', value: 17409 },
@@ -19,7 +19,7 @@ function App() {
     { date: '1998-05-01', value: 32040 },
     { date: '1999-05-01', value: 33233 },
     { date: '2024-05-01', value: 42040 },
-    { date: '2025-05-01', value: 53233 },
+    { date: '2025-03-25', value: 88888 },
   ]
 
   useEffect(() => {
@@ -30,16 +30,16 @@ function App() {
 
     // 声明可视化
      chart.data(data)
-
     chart
       .area()
       .encode('x', (d) => d.date)
       .encode('y', 'value')
-      .encode('shape', 'area') // 'area', 'smooth', 'hvh', 'vh', 'hv'
-      .style('opacity', 0.9)
+      .encode('shape', 'smooth') // 'area', 'smooth', 'hvh', 'vh', 'hv'
+      .style('fillOpacity', 0.9 )
+      .style('fill', 'l(270) 0:#20404AFF 0.5:#28289BFF 1:#0000FFFF') // 配置面积图填充颜色为渐变色)
       .axis('y', { labelFormatter: '~s', title: false })
 
-    chart.line().encode('x', 'date').encode('y', 'value').encode('shape', 'line') // 'line', 'smooth', 'vh', 'hv', 'hvh'
+    chart.line().encode('x', 'date').encode('y', 'value').encode('shape', 'smooth') // 'line', 'smooth', 'vh', 'hv', 'hvh'
 
     // 渲染可视化
     chart.render()
@@ -52,7 +52,6 @@ function App() {
         <Segmented<string>
           options={['年', '月', '周', '日']}
           size="large"
-          shape="round"
           onChange={(value) => {
             console.log(value); // string
           }}

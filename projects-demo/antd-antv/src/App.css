@@ -5,8 +5,12 @@
   overflow: hidden;
 }
 
-.title{
-  font-size: 2.6rem;
+.title {
+  font-size: 3rem;
+  font-weight: 600;
+  background-image: linear-gradient(to right, green, blue, red, purple);
+  color: transparent;
+  background-clip: text;
 }
 
 #container {
@@ -19,9 +23,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
