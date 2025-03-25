@@ -9,17 +9,17 @@ function App() {
   const [count, setCount] = useState(0)
   // 准备数据
   const data = [
-    { year: '1991', value: 15468 },
-    { year: '1992', value: 16100 },
-    { year: '1993', value: 15900 },
-    { year: '1994', value: 17409 },
-    { year: '1995', value: 17000 },
-    { year: '1996', value: 31056 },
-    { year: '1997', value: 31982 },
-    { year: '1998', value: 32040 },
-    { year: '1999', value: 33233 },
-    { year: '2024', value: 42040 },
-    { year: '2025', value: 53233 },
+    { date: '1991-05-01', value: 15468 },
+    { date: '1992-05-01', value: 16100 },
+    { date: '1993-05-01', value: 15900 },
+    { date: '1994-05-01', value: 17409 },
+    { date: '1995-05-01', value: 17000 },
+    { date: '1996-05-01', value: 31056 },
+    { date: '1997-05-01', value: 31982 },
+    { date: '1998-05-01', value: 32040 },
+    { date: '1999-05-01', value: 33233 },
+    { date: '2024-05-01', value: 42040 },
+    { date: '2025-05-01', value: 53233 },
   ]
 
   useEffect(() => {
@@ -29,17 +29,17 @@ function App() {
     })
 
     // 声明可视化
-    chart.data(data)
+     chart.data(data)
 
     chart
       .area()
-      .encode('x', (d) => d.year)
+      .encode('x', (d) => d.date)
       .encode('y', 'value')
-      .encode('shape', 'smooth') // 'area', 'smooth', 'hvh', 'vh', 'hv'
-      .style('opacity', 0.2)
+      .encode('shape', 'area') // 'area', 'smooth', 'hvh', 'vh', 'hv'
+      .style('opacity', 0.9)
       .axis('y', { labelFormatter: '~s', title: false })
 
-    chart.line().encode('x', 'year').encode('y', 'value').encode('shape', 'line') // 'line', 'smooth', 'vh', 'hv', 'hvh'
+    chart.line().encode('x', 'date').encode('y', 'value').encode('shape', 'line') // 'line', 'smooth', 'vh', 'hv', 'hvh'
 
     // 渲染可视化
     chart.render()
@@ -48,7 +48,7 @@ function App() {
   return (
     <>
       <div className="app">
-        <p  className="title">交易总体盈亏曲线图</p>
+        <p  className="title">总体盈亏曲线图</p>
         <Segmented<string>
           options={['年', '月', '周', '日']}
           size="large"
