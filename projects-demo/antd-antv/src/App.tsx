@@ -15,7 +15,9 @@ function App() {
     { type: 'GLOD', date: '2025-01-25', value: 60 },
     { type: 'BTC', date: '2025-02-01', value: 70 },
     { type: 'GLOD', date: '2025-03-25', value: 100 },
-    { type: 'USDJPY', date: '2025-04-01', value: 60 },
+    { type: 'USDJPY', date: '2025-04-01', value: 60, remark: '' },
+    { type: 'NAS100', date: '2025-03-27', value: -21, remark: '123法则 但200均线以下做多和强回调 突发新闻导致快速自动止损亏损 建议入场点使用斐波那契设计' },
+    { type: 'USDJPY', date: '2025-03-28', value: 21, remark: '123法则和金字塔加仓方法 波段交易盈利 盈利达到止盈的60%以上 手动平仓 防止利润回吐' },
   ]
 
   useEffect(() => {
